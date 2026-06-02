@@ -1,0 +1,148 @@
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ChevronDown, Zap, Droplets, Wind } from 'lucide-react';
+import { useRef } from 'react';
+
+const IONS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  y: `${8 + i * 11}%`,
+  duration: 10 + i * 1.5,
+  delay: i * 1.2,
+  size: i % 2 === 0 ? 'w-1.5 h-1.5' : 'w-1 h-1'
+}));
+
+const STATS = [
+{ icon: Zap, value: '262', unit: 'Pa', label: 'Min ΔP', color: 'from-ion to-sky-400' },
+{ icon: Droplets, value: '-54%', unit: '', label: 'Pressure Reduction', color: 'from-teal to-emerald-400' },
+{ icon: Wind, value: '2.0', unit: 'A/cm²', label: 'Operating Point', color: 'from-violet-500 to-ion' }];
+
+
+export default function HeroSection() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
+
+  return (
+    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden bg-white">
+      {/* Soft gradient bg */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-teal-50" />
+
+      {/* Large decorative orbs */}
+      <div className="absolute top-20 right-[5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-ion/10 to-teal/5 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 left-[5%] w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-teal/8 to-ion/5 blur-3xl pointer-events-none" />
+
+      {/* Flowing ion particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {IONS.map((ion) =>
+        <motion.div
+          key={ion.id}
+          className={`absolute ${ion.size} rounded-full bg-ion/30`}
+          initial={{ x: '-5%', y: ion.y }}
+          animate={{ x: '105%' }}
+          transition={{ duration: ion.duration, repeat: Infinity, ease: 'linear', delay: ion.delay }} />
+
+        )}
+      </div>
+
+      {/* Grid overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.025] pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(#0EA5E9 1px, transparent 1px), linear-gradient(90deg, #0EA5E9 1px, transparent 1px)',
+          backgroundSize: '60px 60px'
+        }} />
+      
+
+      {/* Content */}
+      <motion.div style={{ y, opacity }} className="relative z-10 max-w-7xl mx-auto px-6 py-36 w-full">
+        <div className="max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-3 mb-8">
+            
+            <div className="h-px w-8 bg-ion" />
+            <p className="font-mono text-ion text-xs tracking-[0.3em] uppercase">
+              Interdisciplinary Research · 2024–2025
+            </p>
+          </motion.div>
+
+          <motion.h1
+            className="text-5xl md:text-7xl lg:text-8xl font-heading font-extrabold text-slate leading-[1.0] mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}>
+            
+            Optimizing
+            <br />
+            <span className="shimmer-text">Flow Fields</span>
+            <br />
+            <span className="text-slate/25">for Green H₂</span>
+          </motion.h1>
+
+          <motion.p
+            className="text-lg md:text-xl font-light leading-relaxed mb-12 max-w-2xl text-[hsl(var(--sidebar-foreground))]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}>
+            
+            Bio-inspired channel architectures for next-generation PEM Electrolysers —
+            reducing pressure drop by <strong className="text-slate/70 font-semibold">54%</strong> while maximizing hydrogen production efficiency through Murray's Law optimization.
+          </motion.p>
+
+          {/* CTA buttons */}
+          <motion.div
+            className="flex flex-wrap gap-4 mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}>
+            
+            <a href="#abstract"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-ion to-teal text-white font-semibold text-sm hover:shadow-xl hover:shadow-ion/20 transition-all duration-400 hover:-translate-y-0.5">
+              Explore Research
+            </a>
+            <a href="#results"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full border-2 border-slate/10 text-slate font-semibold text-sm hover:border-ion/40 hover:text-ion transition-all duration-300">
+              View Results →
+            </a>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            className="flex flex-wrap gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}>
+            
+            {STATS.map((stat) =>
+            <div key={stat.label}
+            className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white border border-slate/8 shadow-sm hover:shadow-md hover:border-ion/20 transition-all duration-300 group">
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center flex-shrink-0`}>
+                  <stat.icon className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="font-mono font-bold text-slate text-lg leading-none">
+                    {stat.value}<span className="text-sm text-slate/40 ml-1">{stat.unit}</span>
+                  </p>
+                  <p className="text-[10px] font-mono text-slate/40 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+        animate={{ y: [0, 6, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        onClick={() => document.getElementById('abstract')?.scrollIntoView({ behavior: 'smooth' })}>
+        
+        <span className="text-slate/30 text-[10px] font-mono uppercase tracking-[0.3em]">Scroll</span>
+        <ChevronDown className="w-4 h-4 text-slate/30" />
+      </motion.div>
+    </section>);
+
+}

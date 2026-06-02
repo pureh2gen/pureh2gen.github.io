@@ -1,0 +1,132 @@
+import { motion, useInView } from 'framer-motion';
+import { useRef, useState } from 'react';
+
+const components = [
+  { id: 'BP', name: 'Bipolar Plates', desc: 'Current collection, gas separation, thermal management. Material: Titanium Grade 2.', color: 'bg-ion', light: 'bg-ion/10 border-ion/20' },
+  { id: 'PTL', name: 'Porous Transport Layer', desc: 'Uniform reactant distribution, electron conduction, gas evacuation.', color: 'bg-teal', light: 'bg-teal/10 border-teal/20' },
+  { id: 'PEM', name: 'Nafion® Membrane', desc: 'Selective proton transport (H⁺), gas barrier, electrical isolator.', color: 'bg-violet-500', light: 'bg-violet-50 border-violet-100' },
+  { id: 'CL', name: 'Catalyst Layer', desc: 'OER at anode (IrO₂), HER at cathode (Pt/C). Reaction sites.', color: 'bg-amber-500', light: 'bg-amber-50 border-amber-100' },
+];
+
+const reactions = [
+  { side: 'Anode (+)', eq: '2H₂O → O₂ + 4H⁺ + 4e⁻', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-100' },
+  { side: 'Cathode (−)', eq: '4H⁺ + 4e⁻ → 2H₂', color: 'text-ion', bg: 'bg-sky-50 border-sky-100' },
+];
+
+export default function TechnologySection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const [hovered, setHovered] = useState(null);
+
+  return (
+    <section id="technology" className="relative bg-gradient-to-b from-slate/2 to-white py-28 overflow-hidden" ref={ref}>
+      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate/10 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal/8 border border-teal/15 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
+            <span className="font-mono text-teal text-xs tracking-[0.2em] uppercase">02 — Technology</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-slate mb-6">
+            Anatomy of a PEM Cell
+          </h2>
+          <p className="text-lg text-slate/50 max-w-xl mx-auto">
+            Each layer serves a precise electrochemical function. Hover to explore.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left: Interactive layers */}
+          <motion.div
+            className="space-y-3"
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {components.map((comp, i) => (
+              <motion.div
+                key={comp.id}
+                className={`relative p-6 rounded-2xl border cursor-default transition-all duration-400 ${
+                  hovered === comp.id ? `${comp.light} shadow-lg` : 'bg-white border-slate/8 hover:border-slate/15'
+                }`}
+                onMouseEnter={() => setHovered(comp.id)}
+                onMouseLeave={() => setHovered(null)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`w-10 h-10 rounded-xl ${comp.color} flex items-center justify-center flex-shrink-0`}>
+                    <span className="font-mono text-white text-xs font-bold">{comp.id}</span>
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-semibold text-slate mb-1">{comp.name}</h3>
+                    <p className="text-sm text-slate/50 leading-relaxed">{comp.desc}</p>
+                  </div>
+                </div>
+                {/* Animated bar */}
+                <motion.div
+                  className={`absolute bottom-0 left-0 h-[2px] ${comp.color} rounded-b-2xl`}
+                  initial={{ width: 0 }}
+                  animate={{ width: hovered === comp.id ? '100%' : 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Right: Key data */}
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* Reactions */}
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-slate/3 to-ion/3 border border-slate/8">
+              <p className="font-mono text-slate/40 text-xs uppercase tracking-wider mb-5">Core Electrochemistry</p>
+              <div className="space-y-3">
+                {reactions.map((r) => (
+                  <div key={r.side} className={`p-4 rounded-xl border ${r.bg}`}>
+                    <span className={`font-mono text-[10px] uppercase tracking-wider ${r.color} opacity-60`}>{r.side}</span>
+                    <p className={`font-mono text-base font-semibold mt-1 ${r.color}`}>{r.eq}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Key voltages */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { label: 'Reversible Voltage', value: '1.23 V', sub: 'E_rev — theoretical minimum', color: 'border-ion/20 bg-sky-50' },
+                { label: 'Thermoneutral Voltage', value: '1.48 V', sub: 'E_th — thermal equilibrium', color: 'border-teal/20 bg-teal-50' },
+              ].map((v) => (
+                <div key={v.label} className={`p-6 rounded-2xl border ${v.color}`}>
+                  <p className="font-mono text-3xl font-bold text-slate">{v.value}</p>
+                  <p className="font-heading font-semibold text-slate/70 text-sm mt-2">{v.label}</p>
+                  <p className="font-mono text-[10px] text-slate/40 mt-1">{v.sub}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Image */}
+            <div className="rounded-3xl overflow-hidden border border-slate/8">
+              <img
+                src="https://media.base44.com/images/public/6a1c71f7ce7ca404cc9f85ee/f6d6c12cf_generated_52c1a6a5.png"
+                alt="PEM cell schematic"
+                className="w-full aspect-video object-cover"
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}

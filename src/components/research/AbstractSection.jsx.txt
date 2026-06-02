@@ -1,0 +1,111 @@
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { Droplets, Gauge, Leaf, ArrowRight } from 'lucide-react';
+
+const challenges = [
+  {
+    icon: Droplets,
+    label: 'Water Distribution',
+    desc: 'Uneven reactant delivery across the active area leads to catalyst under-utilization and membrane drying.',
+    color: 'from-blue-500 to-ion',
+    bg: 'bg-blue-50',
+    border: 'border-blue-100',
+  },
+  {
+    icon: Gauge,
+    label: 'Pressure Drop',
+    desc: 'Excessive pumping energy from flow resistance reduces overall system efficiency and increases costs.',
+    color: 'from-amber-500 to-orange-400',
+    bg: 'bg-amber-50',
+    border: 'border-amber-100',
+  },
+  {
+    icon: Leaf,
+    label: 'Bio-Inspired Solution',
+    desc: 'Tree leaf vein architecture (Murray\'s Law) provides nature-optimized flow for minimal energy loss.',
+    color: 'from-teal to-emerald-400',
+    bg: 'bg-teal-50',
+    border: 'border-teal-100',
+  },
+];
+
+export default function AbstractSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+  return (
+    <section id="abstract" className="relative bg-white py-28" ref={ref}>
+      {/* Faint section divider */}
+      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate/10 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ion/8 border border-ion/15 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-ion animate-pulse" />
+            <span className="font-mono text-ion text-xs tracking-[0.2em] uppercase">01 — Abstract</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-slate mb-6">
+            The Engineering Challenge
+          </h2>
+          <p className="text-lg text-slate/50 leading-relaxed max-w-2xl mx-auto">
+            PEM electrolysers offer unmatched efficiency for green hydrogen production — but two fundamental
+            fluidic problems limit their real-world performance.
+          </p>
+        </motion.div>
+
+        {/* Challenge cards */}
+        <div className="grid md:grid-cols-3 gap-6 mb-20">
+          {challenges.map((item, i) => (
+            <motion.div
+              key={item.label}
+              className={`card-hover relative p-8 rounded-3xl border ${item.border} ${item.bg} overflow-hidden group cursor-default`}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 + i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-lg`}>
+                <item.icon className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-heading font-bold text-slate text-lg mb-3">{item.label}</h3>
+              <p className="text-sm text-slate/60 leading-relaxed">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Abstract text */}
+        <motion.div
+          className="bg-gradient-to-br from-slate/3 to-ion/3 rounded-3xl border border-slate/8 p-10 md:p-14"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-lg md:text-xl text-slate/70 leading-[1.9]">
+              This study compares <strong className="text-slate font-semibold">traditional configurations</strong> (serpentine and parallel channels)
+              with an innovative <strong className="text-ion font-semibold">bio-inspired annular design</strong> based on leaf-vein vascular networks.
+              Using CATIA 3D modelling, MATLAB electrochemical simulation, and SimScale CFD validation,
+              we demonstrate a <strong className="text-teal font-semibold">54% pressure drop reduction</strong> while improving flow homogeneity and hydrogen production.
+            </p>
+            <div className="flex items-center justify-center gap-6 mt-8">
+              <span className="flex items-center gap-2 text-sm text-slate/40 font-mono">
+                <div className="w-2 h-2 rounded-full bg-ion" /> CFD Validated
+              </span>
+              <span className="flex items-center gap-2 text-sm text-slate/40 font-mono">
+                <div className="w-2 h-2 rounded-full bg-teal" /> 3D Printed
+              </span>
+              <span className="flex items-center gap-2 text-sm text-slate/40 font-mono">
+                <div className="w-2 h-2 rounded-full bg-violet-400" /> MATLAB Modelled
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

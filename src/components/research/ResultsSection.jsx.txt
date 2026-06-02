@@ -1,0 +1,171 @@
+import { motion, useInView } from 'framer-motion';
+import { useRef, useState } from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, ReferenceLine,
+} from 'recharts';
+
+const pressureData = [
+  { name: 'Parallel', value: 565 },
+  { name: 'Serpentine', value: 486 },
+  { name: 'Bio-Inspired', value: 262 },
+];
+
+const COLORS = { Parallel: '#EF4444', Serpentine: '#F59E0B', 'Bio-Inspired': '#14B8A6' };
+
+const polarizationData = [
+  { j: 0, V: 1.23 },
+  { j: 0.2, V: 1.45 },
+  { j: 0.4, V: 1.52 },
+  { j: 0.6, V: 1.56 },
+  { j: 0.8, V: 1.60 },
+  { j: 1.0, V: 1.64 },
+  { j: 1.2, V: 1.68 },
+  { j: 1.4, V: 1.72 },
+  { j: 1.6, V: 1.76 },
+  { j: 1.8, V: 1.82 },
+  { j: 2.0, V: 1.92 },
+];
+
+const CustomBarTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="bg-white border border-slate/10 rounded-xl px-4 py-3 shadow-xl">
+      <p className="font-mono text-slate/50 text-[10px] uppercase tracking-wider">{d.name}</p>
+      <p className="font-mono text-slate text-lg font-bold">{d.value} <span className="text-sm text-slate/40">Pa</span></p>
+    </div>
+  );
+};
+
+const CustomLineTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-white border border-slate/10 rounded-xl px-4 py-3 shadow-xl">
+      <p className="font-mono text-slate/50 text-[10px] uppercase tracking-wider">j = {label} A/cm²</p>
+      <p className="font-mono text-ion text-lg font-bold">{payload[0].value.toFixed(2)} <span className="text-sm text-slate/40">V</span></p>
+    </div>
+  );
+};
+
+const CustomBar = (props) => {
+  const { x, y, width, height, name } = props;
+  return <rect x={x} y={y} width={width} height={height} fill={COLORS[name]} rx={8} ry={8} />;
+};
+
+const KPI = ({ metric, label, desc, delay, color }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  return (
+    <motion.div
+      ref={ref}
+      className="relative p-8 rounded-3xl border border-slate/8 bg-white card-hover overflow-hidden"
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10`} style={{ background: color }} />
+      <p className={`font-mono text-5xl font-extrabold mb-3`} style={{ color }}>{metric}</p>
+      <p className="font-heading font-semibold text-slate mb-1">{label}</p>
+      <p className="text-sm text-slate/40">{desc}</p>
+    </motion.div>
+  );
+};
+
+export default function ResultsSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+  return (
+    <section id="results" className="relative bg-gradient-to-b from-slate/2 to-white py-28" ref={ref}>
+      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate/10 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal/8 border border-teal/15 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
+            <span className="font-mono text-teal text-xs tracking-[0.2em] uppercase">04 — Results</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-slate mb-6">
+            Performance Dashboard
+          </h2>
+          <p className="text-lg text-slate/50 max-w-xl mx-auto">
+            CFD-validated data proving the superiority of the bio-inspired flow field.
+          </p>
+        </motion.div>
+
+        {/* Charts */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          {/* Pressure bar chart */}
+          <motion.div
+            className="p-8 rounded-3xl border border-slate/8 bg-white"
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <h3 className="font-heading font-bold text-slate text-lg mb-1">Pressure Drop Comparison</h3>
+            <p className="text-slate/40 text-sm mb-8 font-mono">ΔP at 2.0 A/cm² — Pa</p>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={pressureData} barSize={52}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.04)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#94A3B8', fontFamily: 'JetBrains Mono' }}
+                    axisLine={{ stroke: 'rgba(15,23,42,0.08)' }} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: '#94A3B8', fontFamily: 'JetBrains Mono' }}
+                    axisLine={false} tickLine={false} unit=" Pa" />
+                  <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'rgba(15,23,42,0.02)', radius: 8 }} />
+                  <Bar dataKey="value" shape={<CustomBar />} radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          {/* Polarization curve */}
+          <motion.div
+            className="p-8 rounded-3xl border border-slate/8 bg-white"
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <h3 className="font-heading font-bold text-slate text-lg mb-1">Polarization Curve</h3>
+            <p className="text-slate/40 text-sm mb-8 font-mono">V = f(j) — Voltage vs. Current Density</p>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={polarizationData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.04)" />
+                  <XAxis dataKey="j" tick={{ fontSize: 11, fill: '#94A3B8', fontFamily: 'JetBrains Mono' }}
+                    axisLine={{ stroke: 'rgba(15,23,42,0.08)' }} tickLine={false}
+                    label={{ value: 'j (A/cm²)', position: 'insideBottom', offset: -2, style: { fontSize: 10, fill: '#94A3B8' } }} />
+                  <YAxis domain={[1.0, 2.1]} tick={{ fontSize: 11, fill: '#94A3B8', fontFamily: 'JetBrains Mono' }}
+                    axisLine={false} tickLine={false}
+                    label={{ value: 'V (V)', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: '#94A3B8' } }} />
+                  <ReferenceLine y={1.23} stroke="#0EA5E9" strokeDasharray="4 4" strokeOpacity={0.4}
+                    label={{ value: 'E_rev', position: 'right', style: { fontSize: 9, fill: '#0EA5E9', fontFamily: 'JetBrains Mono' } }} />
+                  <ReferenceLine y={1.48} stroke="#14B8A6" strokeDasharray="4 4" strokeOpacity={0.4}
+                    label={{ value: 'E_th', position: 'right', style: { fontSize: 9, fill: '#14B8A6', fontFamily: 'JetBrains Mono' } }} />
+                  <Tooltip content={<CustomLineTooltip />} />
+                  <Line type="monotone" dataKey="V" stroke="#0EA5E9" strokeWidth={2.5}
+                    dot={{ fill: '#0EA5E9', r: 3, strokeWidth: 0 }}
+                    activeDot={{ r: 6, fill: '#0EA5E9', stroke: 'white', strokeWidth: 2 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* KPI cards */}
+        <div className="grid md:grid-cols-3 gap-6">
+          <KPI metric="-54%" label="Pressure Drop Reduction" desc="Bio-inspired vs. parallel at 2.0 A/cm²" delay={0.4} color="#14B8A6" />
+          <KPI metric="262 Pa" label="Minimum ΔP Achieved" desc="Annular bio-inspired design (Murray's Law)" delay={0.5} color="#0EA5E9" />
+          <KPI metric="0.24" label="Best Uniformity Index" desc="Homogeneous velocity distribution" delay={0.6} color="#8B5CF6" />
+        </div>
+      </div>
+    </section>
+  );
+}

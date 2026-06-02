@@ -1,0 +1,29 @@
+import ProgressBar from '../components/research/ProgressBar';
+import Navbar from '../components/research/Navbar';
+import HeroSection from '../components/research/HeroSection';
+import AbstractSection from '../components/research/AbstractSection';
+import Cell3DSection from '../components/research/Cell3DSection';
+import HydrogenStepsSection from '../components/research/HydrogenStepsSection';
+import TechnologySection from '../components/research/TechnologySection';
+import ProtonJourneySection from '../components/research/ProtonJourneySection';
+import FlowFieldsSection from '../components/research/FlowFieldsSection';
+import ResultsSection from '../components/research/ResultsSection';
+import FooterSection from '../components/research/FooterSection';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen">
+      <ProgressBar />
+      <Navbar />
+      <HeroSection />
+      <AbstractSection />
+      <HydrogenStepsSection />
+      <Cell3DSection />
+      <TechnologySection />
+      <ProtonJourneySection />
+      <FlowFieldsSection />
+      <ResultsSection />
+      <FooterSection />
+    </div>
+  );
+}

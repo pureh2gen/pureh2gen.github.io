@@ -1,0 +1,122 @@
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+
+const JOURNEY = [
+  { pos: '5%',  label: 'H₂O enters', desc: 'Pure water is fed to anode', color: '#0EA5E9', side: 'top' },
+  { pos: '20%', label: 'OER reaction', desc: '2H₂O → O₂ + 4H⁺ + 4e⁻', color: '#F59E0B', side: 'bottom' },
+  { pos: '35%', label: 'O₂ evacuated', desc: 'Oxygen exits via flow field', color: '#EF4444', side: 'top' },
+  { pos: '50%', label: 'H⁺ crosses Nafion', desc: 'Proton migrates through membrane', color: '#14B8A6', side: 'bottom' },
+  { pos: '65%', label: 'e⁻ external circuit', desc: 'Electrons travel via wire → power source', color: '#8B5CF6', side: 'top' },
+  { pos: '80%', label: 'HER reaction', desc: '4H⁺ + 4e⁻ → 2H₂', color: '#8B5CF6', side: 'bottom' },
+  { pos: '95%', label: 'H₂ output', desc: 'Pure hydrogen stored at pressure', color: '#10B981', side: 'top' },
+];
+
+export default function ProtonJourneySection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const pathProgress = useTransform(scrollYProgress, [0.1, 0.8], [0, 1]);
+
+  return (
+    <section className="relative bg-cobalt py-28 overflow-hidden" ref={ref}>
+      <div className="absolute inset-0 opacity-[0.04]"
+        style={{ backgroundImage: 'linear-gradient(#0EA5E9 1px, transparent 1px), linear-gradient(90deg, #0EA5E9 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+
+      {/* Orbs */}
+      <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-ion/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 right-1/4 w-96 h-96 rounded-full bg-teal/10 blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
+            <span className="font-mono text-teal text-xs tracking-[0.2em] uppercase">The Proton Journey</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+            Follow a Single Proton
+          </h2>
+          <p className="text-lg text-white/40 max-w-xl mx-auto">
+            From water molecule to pure hydrogen gas — visualised as you scroll.
+          </p>
+        </motion.div>
+
+        {/* Scroll-driven path */}
+        <div className="relative mb-20">
+          {/* SVG path */}
+          <svg className="w-full h-32 md:h-24" viewBox="0 0 1000 80" preserveAspectRatio="none">
+            <motion.path
+              d="M 0 40 Q 125 10 250 40 Q 375 70 500 40 Q 625 10 750 40 Q 875 70 1000 40"
+              fill="none"
+              stroke="rgba(14,165,233,0.15)"
+              strokeWidth="2"
+              strokeDasharray="6 4"
+            />
+            <motion.path
+              d="M 0 40 Q 125 10 250 40 Q 375 70 500 40 Q 625 10 750 40 Q 875 70 1000 40"
+              fill="none"
+              stroke="#0EA5E9"
+              strokeWidth="3"
+              strokeLinecap="round"
+              pathLength="1"
+              style={{ pathLength: pathProgress }}
+            />
+          </svg>
+
+          {/* Journey dots */}
+          <div className="absolute inset-0">
+            {JOURNEY.map((point, i) => (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{ left: point.pos, top: point.side === 'top' ? '-16px' : 'auto', bottom: point.side === 'bottom' ? '-16px' : 'auto' }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="relative -translate-x-1/2 group">
+                  <div className="w-4 h-4 rounded-full shadow-lg shadow-ion/30 border-2 border-cobalt cursor-pointer"
+                    style={{ background: point.color }} />
+                  <div className={`absolute ${point.side === 'top' ? 'bottom-6' : 'top-6'} left-1/2 -translate-x-1/2 w-max max-w-[140px] bg-white rounded-xl px-3 py-2 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10`}>
+                    <p className="font-heading font-semibold text-slate text-xs">{point.label}</p>
+                    <p className="font-mono text-[9px] text-slate/50 mt-0.5 leading-tight">{point.desc}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Big stat cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            { label: 'Proton travel time', value: '~ms', sub: 'Across Nafion membrane', color: '#14B8A6' },
+            { label: 'H₂ energy density', value: '33.3', unit: 'kWh/kg', sub: 'vs 12.7 kWh/kg for CH₄', color: '#0EA5E9' },
+            { label: 'H₂ purity output', value: '99.999', unit: '%', sub: 'After membrane dryer', color: '#8B5CF6' },
+            { label: 'CO₂ emitted', value: '0', unit: 'g/kWh', sub: 'Zero-emission process', color: '#10B981' },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="p-7 rounded-3xl border border-white/8 bg-white/4 backdrop-blur-sm"
+              initial={{ opacity: 0, y: 24 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.6 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <p className="font-mono font-extrabold text-4xl mb-1" style={{ color: stat.color }}>
+                {stat.value}
+                {stat.unit && <span className="text-xl ml-1 opacity-60">{stat.unit}</span>}
+              </p>
+              <p className="font-heading font-semibold text-white text-sm mb-1">{stat.label}</p>
+              <p className="text-white/30 text-xs font-mono">{stat.sub}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

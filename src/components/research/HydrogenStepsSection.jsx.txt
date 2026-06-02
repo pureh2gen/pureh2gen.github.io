@@ -1,0 +1,235 @@
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { Droplets, Zap, Wind, Flame, Atom } from 'lucide-react';
+
+const STEPS = [
+  {
+    num: '01',
+    icon: Droplets,
+    title: 'Pure Water Input',
+    subtitle: 'H₂O enters the anode',
+    color: '#0EA5E9',
+    bg: 'bg-sky-50',
+    border: 'border-sky-100',
+    simple: 'Pure water is pumped into the electrolyser through the anode side.',
+    advanced: 'Deionised water (conductivity < 1 μS/cm) is fed via a peristaltic pump at stoichiometry λ = 2–3 relative to the theoretical water consumption at the target current density (j = 2.0 A/cm²).',
+    equation: null,
+    visual: '💧 → ⚡',
+  },
+  {
+    num: '02',
+    icon: Zap,
+    title: 'Electrical Splitting',
+    subtitle: 'Oxidation at the anode (IrO₂)',
+    color: '#F59E0B',
+    bg: 'bg-amber-50',
+    border: 'border-amber-100',
+    simple: 'Electricity is applied. At the anode, water molecules are broken apart: oxygen gas is released, and protons + electrons are separated.',
+    advanced: 'The Oxygen Evolution Reaction (OER) occurs at the IrO₂ anode. It is the kinetically limiting half-reaction, requiring a significant overpotential (η_act ≈ 250–300 mV) described by the Butler-Volmer equation. This is why IrO₂ catalysts are critical.',
+    equation: '2H₂O → O₂ + 4H⁺ + 4e⁻',
+    visual: '⚡ + 💧',
+  },
+  {
+    num: '03',
+    icon: Atom,
+    title: 'Proton Migration',
+    subtitle: 'H⁺ crosses the Nafion® membrane',
+    color: '#14B8A6',
+    bg: 'bg-teal-50',
+    border: 'border-teal-100',
+    simple: 'Tiny hydrogen ions (protons) travel through the special Nafion membrane from the anode side to the cathode side. The membrane blocks everything else.',
+    advanced: 'Hydrated protons (H₃O⁺) migrate through the sulfonated tetrafluoroethylene-based polymer (Nafion®) via a vehicle/Grotthuss mechanism. Membrane conductivity σ ∝ hydration level λ_m. Ohmic losses: ΔV_ohm = i × R_mem, where R_mem ≈ 0.05–0.15 Ω·cm².',
+    equation: 'H⁺ (anode) → H⁺ (cathode) through Nafion',
+    visual: '→ [Nafion] →',
+  },
+  {
+    num: '04',
+    icon: Wind,
+    title: 'Hydrogen Production',
+    subtitle: 'Reduction at the cathode (Pt/C)',
+    color: '#8B5CF6',
+    bg: 'bg-violet-50',
+    border: 'border-violet-100',
+    simple: 'At the cathode, the protons combine with electrons from the circuit to form hydrogen gas (H₂). This is the gas we wanted to produce!',
+    advanced: 'The Hydrogen Evolution Reaction (HER) at the Pt/C cathode is highly reversible with exchange current density j₀ ≈ 10⁻³ A/cm² — much faster than OER. Tafel slope ~30 mV/dec at low overpotential. H₂ purity > 99.999% achieved before drying.',
+    equation: '4H⁺ + 4e⁻ → 2H₂',
+    visual: 'H⁺ + e⁻ → H₂',
+  },
+  {
+    num: '05',
+    icon: Flame,
+    title: 'Green Hydrogen Output',
+    subtitle: 'Stored, transported, utilized',
+    color: '#10B981',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-100',
+    simple: 'Pure hydrogen gas exits the electrolyser and can be stored in tanks, transported, or used directly in fuel cells for clean electricity — with only water as a by-product.',
+    advanced: 'Output H₂ is typically at pressures up to 30–80 bar (differential pressure electrolysis). After drying (silica gel or membrane dryer), it reaches 99.999% purity. Energy density: 33.3 kWh/kg vs. 12.7 kWh/kg for methane. Faradaic efficiency η_F = n_H₂·2F / (I·t) > 99.5%.',
+    equation: 'By-product: H₂O + Heat only',
+    visual: 'H₂ → 🔋🚗⚡',
+  },
+];
+
+export default function HydrogenStepsSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const [activeStep, setActiveStep] = useState(0);
+
+  return (
+    <section id="howit works" className="relative bg-white py-28" ref={ref}>
+      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate/10 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header + mode toggle */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-100 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono text-emerald-600 text-xs tracking-[0.2em] uppercase">How It Works</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-slate mb-6">
+            From Water to<br />Green Hydrogen
+          </h2>
+          <p className="text-lg text-slate/50 max-w-xl mx-auto">
+            The full electrochemical process, step by step.
+          </p>
+        </motion.div>
+
+        {/* Step selector */}
+        <motion.div
+          className="flex overflow-x-auto gap-3 pb-2 mb-8 justify-center"
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {STEPS.map((step, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveStep(i)}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-300 ${
+                activeStep === i
+                  ? 'text-white border-transparent shadow-lg'
+                  : 'bg-white border-slate/10 text-slate/50 hover:border-slate/20'
+              }`}
+              style={activeStep === i ? { background: step.color, boxShadow: `0 6px 20px ${step.color}40` } : {}}
+            >
+              <span className="font-mono text-xs opacity-70">{step.num}</span>
+              <span className="hidden sm:block">{step.title}</span>
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Active step detail */}
+        <AnimatePresence mode="wait">
+          {STEPS.map((step, i) => (
+            activeStep === i && (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className={`rounded-3xl border ${step.border} ${step.bg} p-10 md:p-14`}
+              >
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                  {/* Left */}
+                  <div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg"
+                        style={{ background: step.color }}>
+                        <step.icon className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <p className="font-mono text-[10px] uppercase tracking-wider" style={{ color: step.color }}>{step.num}</p>
+                        <h3 className="font-heading font-bold text-slate text-2xl">{step.title}</h3>
+                        <p className="text-slate/50 text-sm">{step.subtitle}</p>
+                      </div>
+                    </div>
+
+                    <p className="text-slate/70 leading-[1.9] text-base mb-6">
+                      {step.advanced}
+                    </p>
+
+                    {step.equation && (
+                      <div className="inline-block px-5 py-3 rounded-xl bg-white border border-slate/10 shadow-sm">
+                        <p className="font-mono text-sm font-semibold" style={{ color: step.color }}>{step.equation}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right: Visual */}
+                  <div className="flex flex-col items-center gap-6">
+                    {/* Big emoji visual */}
+                    <div className="text-7xl select-none">{step.visual}</div>
+
+                    {/* Progress bar through steps */}
+                    <div className="w-full">
+                      <div className="flex justify-between mb-2">
+                        <span className="font-mono text-[10px] text-slate/40 uppercase tracking-wider">Process Progress</span>
+                        <span className="font-mono text-[10px] font-semibold" style={{ color: step.color }}>{Math.round(((i + 1) / STEPS.length) * 100)}%</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-slate/8">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ background: step.color }}
+                          initial={{ width: `${(i / STEPS.length) * 100}%` }}
+                          animate={{ width: `${((i + 1) / STEPS.length) * 100}%` }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Nav */}
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setActiveStep(Math.max(0, i - 1))}
+                        disabled={i === 0}
+                        className="px-5 py-2 rounded-full border border-slate/10 text-slate/50 text-sm font-semibold disabled:opacity-30 hover:border-slate/20 transition-all"
+                      >
+                        ← Previous
+                      </button>
+                      <button
+                        onClick={() => setActiveStep(Math.min(STEPS.length - 1, i + 1))}
+                        disabled={i === STEPS.length - 1}
+                        className="px-5 py-2 rounded-full text-white text-sm font-semibold disabled:opacity-30 transition-all shadow-lg"
+                        style={{ background: step.color }}
+                      >
+                        Next →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          ))}
+        </AnimatePresence>
+
+        {/* All steps overview */}
+        <motion.div
+          className="mt-10 grid grid-cols-5 gap-2"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          {STEPS.map((step, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveStep(i)}
+              className={`p-3 rounded-2xl border text-center transition-all duration-300 ${
+                activeStep === i ? 'border-transparent shadow-md' : 'border-slate/8 bg-white hover:border-slate/15'
+              }`}
+              style={activeStep === i ? { background: `${step.color}15`, borderColor: `${step.color}40` } : {}}
+            >
+              <step.icon className="w-5 h-5 mx-auto mb-1" style={{ color: step.color }} />
+              <p className="text-[9px] font-mono text-slate/50 hidden sm:block">{step.title.split(' ')[0]}</p>
+            </button>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}

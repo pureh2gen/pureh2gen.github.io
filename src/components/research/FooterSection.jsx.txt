@@ -1,0 +1,82 @@
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { Download, Atom, Mail } from 'lucide-react';
+
+export default function FooterSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+  return (
+    <footer id="contact" className="relative overflow-hidden" ref={ref}>
+      {/* Dark CTA section */}
+      <div className="relative bg-cobalt py-28 overflow-hidden">
+        {/* Decorative orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-ion/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-teal/10 blur-3xl pointer-events-none" />
+
+        {/* Grid */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: 'linear-gradient(#0EA5E9 1px, transparent 1px), linear-gradient(90deg, #0EA5E9 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+          }} />
+
+        <div className="relative max-w-4xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-ion to-teal flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-ion/30">
+              <Atom className="w-8 h-8 text-white" />
+            </div>
+
+            <p className="font-mono text-teal text-xs tracking-[0.3em] uppercase mb-6">From Lab to World</p>
+
+            <h2 className="text-4xl md:text-6xl font-heading font-extrabold text-white leading-tight mb-6">
+              The Hydrogen
+              <br />
+              <span className="shimmer-text">Leap Forward</span>
+            </h2>
+
+            <p className="text-white/40 text-lg leading-relaxed mb-12 max-w-xl mx-auto">
+              Green hydrogen produced via optimized PEM electrolysis is a cornerstone of 
+              the decarbonized energy future. Our bio-inspired flow fields bring that future closer.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="https://media.base44.com/files/public/user_6a1c7177521c9f6ff37cb3c4/7ee71f1be_DOC-20260531-WA0048.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-ion to-teal text-white font-semibold hover:shadow-2xl hover:shadow-teal/30 transition-all duration-400 hover:-translate-y-0.5"
+              >
+                <Download className="w-4 h-4" />
+                Download Full Report
+              </a>
+              <a
+                href="#abstract"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-white/15 text-white/70 font-semibold hover:border-white/30 hover:text-white transition-all duration-300"
+              >
+                Back to Top
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="bg-cobalt border-t border-white/5 py-6">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-ion to-teal flex items-center justify-center">
+              <Atom className="w-3 h-3 text-white" />
+            </div>
+            <span className="font-mono text-white/25 text-xs">PEM Electrolyser Research</span>
+          </div>
+          <p className="font-mono text-white/20 text-xs">Academic Year 2024–2025</p>
+        </div>
+      </div>
+    </footer>
+  );
+}

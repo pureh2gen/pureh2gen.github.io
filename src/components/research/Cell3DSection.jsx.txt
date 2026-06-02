@@ -1,0 +1,71 @@
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import PEMCell3D from './PEMCell3D';
+
+export default function Cell3DSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+
+  return (
+    <section id="model3d" className="relative bg-gradient-to-b from-white to-sky-50/40 py-28 overflow-hidden" ref={ref}>
+      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate/10 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
+          
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ion/8 border border-ion/15 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-ion animate-pulse" />
+            <span className="font-mono text-ion text-xs tracking-[0.2em] uppercase">Interactive 3D Model</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-slate mb-6">PEM Cell in 3D
+
+          </h2>
+          <p className="text-lg text-slate/50 max-w-xl mx-auto">An interactive exploded-view model of every layer inside the PEM electrolyser stack. 
+
+
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="rounded-3xl overflow-hidden border border-slate/8 shadow-2xl shadow-slate/5"
+          style={{ height: '560px' }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}>
+          
+          <PEMCell3D />
+        </motion.div>
+
+        {/* Quick layer legend below */}
+        <motion.div
+          className="mt-8 grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-3"
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+          
+          {[
+          { label: 'End Plate', color: '#334155' },
+          { label: 'Bipolar Plate', color: '#0ea5e9' },
+          { label: 'Cathode Gasket', color: '#f43f5e' },
+          { label: 'Cathode GDL', color: '#94a3b8' },
+          { label: 'MEA', color: '#14b8a6' },
+          { label: 'Anode PTL', color: '#f59e0b' },
+          { label: 'Anode Gasket', color: '#a855f7' },
+          { label: 'Bipolar Plate', color: '#0ea5e9' },
+          { label: 'End Plate', color: '#334155' }].
+          map((item) =>
+          <div key={item.label} className="flex flex-col items-center gap-1.5 text-center">
+              <div className="w-6 h-6 rounded-lg shadow-sm" style={{ background: item.color }} />
+              <span className="text-[9px] font-mono text-slate/50 leading-tight">{item.label}</span>
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </section>);
+
+}

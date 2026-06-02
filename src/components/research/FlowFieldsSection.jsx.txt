@@ -1,0 +1,236 @@
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { CheckCircle, XCircle } from 'lucide-react';
+
+const geometries = [
+  {
+    id: 'parallel',
+    num: 'A',
+    name: 'Parallel',
+    pressure: 565,
+    velocity: '23.9',
+    uniformity: 'Low',
+    uniformityPct: 22,
+    pros: ['Simple CNC fabrication', 'Lowest pressure drop'],
+    cons: ['Gas blockage at high current', 'Asymmetric water distribution'],
+    color: '#EF4444',
+    light: 'bg-red-50 border-red-100',
+    tag: 'bg-red-100 text-red-600',
+    accentText: 'text-red-500',
+  },
+  {
+    id: 'serpentine',
+    num: 'B',
+    name: 'Serpentine',
+    pressure: 486,
+    velocity: '23.5',
+    uniformity: 'Good',
+    uniformityPct: 60,
+    pros: ['Forced under-rib convection', 'Good gas purging'],
+    cons: ['Higher pumping energy', 'Temperature gradient along path'],
+    color: '#F59E0B',
+    light: 'bg-amber-50 border-amber-100',
+    tag: 'bg-amber-100 text-amber-700',
+    accentText: 'text-amber-500',
+  },
+  {
+    id: 'bioinspired',
+    num: 'C',
+    name: 'Bio-Inspired',
+    pressure: 262,
+    velocity: '19.9',
+    uniformity: 'Excellent',
+    uniformityPct: 94,
+    pros: ["Murray's Law bifurcation", 'Lowest pressure drop', 'Uniform radial distribution'],
+    cons: ['More complex geometry', 'Harder CNC toolpath'],
+    color: '#14B8A6',
+    light: 'bg-teal-50 border-teal-100',
+    tag: 'bg-teal-100 text-teal-700',
+    accentText: 'text-teal-500',
+  },
+];
+
+export default function FlowFieldsSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const [active, setActive] = useState('bioinspired');
+  const activeGeo = geometries.find(g => g.id === active);
+
+  return (
+    <section id="flowfields" className="relative bg-white py-28" ref={ref}>
+      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate/10 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-50 border border-violet-100 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+            <span className="font-mono text-violet-600 text-xs tracking-[0.2em] uppercase">03 — Flow Fields</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-slate mb-6">
+            Comparing Channel Architectures
+          </h2>
+          <p className="text-lg text-slate/50 max-w-xl mx-auto">
+            Click each design to explore its hydrodynamic behaviour and performance metrics.
+          </p>
+        </motion.div>
+
+        {/* Selector tabs */}
+        <motion.div
+          className="flex justify-center gap-3 mb-12"
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {geometries.map((geo) => (
+            <button
+              key={geo.id}
+              onClick={() => setActive(geo.id)}
+              className={`relative px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-400 ${
+                active === geo.id
+                  ? `text-white shadow-lg`
+                  : 'bg-white border border-slate/10 text-slate/50 hover:border-slate/20 hover:text-slate'
+              }`}
+              style={active === geo.id ? { background: geo.color, boxShadow: `0 8px 30px ${geo.color}40` } : {}}
+            >
+              <span className="font-mono mr-2 opacity-60 text-xs">{geo.num}</span>
+              {geo.name}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Detail panel */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            className={`rounded-3xl border ${activeGeo.light} overflow-hidden`}
+            initial={{ opacity: 0, y: 16, scale: 0.99 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.99 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="grid md:grid-cols-2">
+              {/* Left: Metrics */}
+              <div className="p-10 md:p-12">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-mono font-bold text-sm"
+                    style={{ background: activeGeo.color }}>
+                    {activeGeo.num}
+                  </div>
+                  <h3 className="font-heading font-bold text-slate text-2xl">{activeGeo.name}</h3>
+                </div>
+
+                {/* Pressure drop hero */}
+                <div className="mb-8">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-slate/40 mb-2">Pressure Drop at 2.0 A/cm²</p>
+                  <p className={`font-mono text-6xl font-bold ${activeGeo.accentText}`}>
+                    {activeGeo.pressure}
+                    <span className="text-2xl text-slate/30 ml-2">Pa</span>
+                  </p>
+                </div>
+
+                {/* Uniformity bar */}
+                <div className="mb-8">
+                  <div className="flex justify-between mb-2">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-slate/40">Flow Uniformity</p>
+                    <p className={`font-mono text-xs font-semibold ${activeGeo.accentText}`}>{activeGeo.uniformity}</p>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate/8 overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: activeGeo.color }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${activeGeo.uniformityPct}%` }}
+                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                  </div>
+                </div>
+
+                {/* Max velocity */}
+                <div className="grid grid-cols-2 gap-4 mb-10">
+                  <div className="p-4 rounded-xl bg-white/60 border border-slate/8">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-slate/40 mb-1">Max Velocity</p>
+                    <p className="font-mono text-xl font-bold text-slate">{activeGeo.velocity} <span className="text-sm text-slate/30">m/s</span></p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white/60 border border-slate/8">
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-slate/40 mb-1">Channel Width</p>
+                    <p className="font-mono text-xl font-bold text-slate">1.0 <span className="text-sm text-slate/30">mm</span></p>
+                  </div>
+                </div>
+
+                {/* Pros / Cons */}
+                <div className="space-y-2">
+                  {activeGeo.pros.map(p => (
+                    <div key={p} className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-teal flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-slate/70">{p}</span>
+                    </div>
+                  ))}
+                  {activeGeo.cons.map(c => (
+                    <div key={c} className="flex items-start gap-2">
+                      <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-slate/70">{c}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: Image + visual comparison */}
+              <div className="relative">
+                <img
+                  src="https://media.base44.com/images/public/6a1c71f7ce7ca404cc9f85ee/d5d6a569b_generated_9ac133d4.png"
+                  alt="Flow channel"
+                  className="w-full h-full object-cover min-h-[300px]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent to-white/30" />
+                {/* Pressure rank badge */}
+                <div className="absolute top-6 right-6 px-4 py-2 rounded-full text-white text-xs font-semibold font-mono shadow-lg"
+                  style={{ background: activeGeo.color }}>
+                  {activeGeo.id === 'bioinspired' ? '🏆 Best Performance' :
+                   activeGeo.id === 'serpentine' ? '⚙️ Industrial Standard' :
+                   '📐 Baseline Design'}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Comparison bar chart */}
+        <motion.div
+          className="mt-8 p-8 rounded-3xl bg-gradient-to-br from-slate/3 to-transparent border border-slate/8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <p className="font-mono text-slate/40 text-xs uppercase tracking-wider mb-6">Pressure Drop Comparison (Pa)</p>
+          <div className="space-y-4">
+            {geometries.map((geo) => (
+              <div key={geo.id} className="flex items-center gap-4">
+                <span className="font-mono text-xs text-slate/50 w-24 flex-shrink-0">{geo.name}</span>
+                <div className="flex-1 h-8 rounded-xl bg-slate/5 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-xl flex items-center pl-4"
+                    style={{ background: `${geo.color}20`, width: `${(geo.pressure / 565) * 100}%` }}
+                    initial={{ width: 0 }}
+                    animate={isInView ? { width: `${(geo.pressure / 565) * 100}%` } : { width: 0 }}
+                    transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="w-2 h-2 rounded-full mr-2" style={{ background: geo.color }} />
+                  </motion.div>
+                </div>
+                <span className="font-mono text-sm font-bold w-16 text-right" style={{ color: geo.color }}>
+                  {geo.pressure} Pa
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
